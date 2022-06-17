@@ -8,7 +8,7 @@
 #define MAXPENDING 5    /* Maximum outstanding connection requests */
 #define RCVBUFSIZE 32   /* Size of receive buffer */
 
-void DieWithError(char errorMessage);  / Error handling function */
+void DieWithError(char *errorMessage);  /* Error handling function */
 void HandleTCPClient(int clntSocket);   /* TCP client handling function */
 
 
@@ -31,8 +31,7 @@ int main(int argc, char *argv[])
 
     /* Create socket for incoming connections */
     if ((servSock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0)
-        DieWithError("socket() failed");
-      
+	DieWithError("socket() failed");
     /* Construct local address structure */
     memset(&echoServAddr, 0, sizeof(echoServAddr));   /* Zero out structure */
     echoServAddr.sin_family = AF_INET;                /* Internet address family */
@@ -53,8 +52,7 @@ int main(int argc, char *argv[])
         clntLen = sizeof(echoClntAddr);
 
         /* Wait for a client to connect */
-        if ((clntSock = accept(servSock, (struct sockaddr *) &echoClntAddr, 
-                               &clntLen)) < 0)
+        if ((clntSock = accept(servSock, (struct sockaddr *) &echoClntAddr, &clntLen)) < 0)
             DieWithError("accept() failed");
 
         /* clntSock is connected to a client! */
@@ -92,9 +90,8 @@ void HandleTCPClient(int clntSocket)
 	fprintf( fp, "%s\n", echoBuffer);
 	fclose(fp);
 	printf("Data yang diterima: %s\n",echoBuffer);
-	 
 
-        /* Echo message back to client */        
+        /* Echo message back to client */
 	if (send(clntSocket, echoBuffer, recvMsgSize, 0) != recvMsgSize)
             DieWithError("send() failed");
 
